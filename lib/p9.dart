@@ -1,65 +1,67 @@
+
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const CustomCardApp());
 }
 
-class MyApp extends StatelessWidget {
+class CustomCardApp extends StatelessWidget {
+  const CustomCardApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Task 9',
-      home: PaintingMaterialList(),
+      title: 'Custom Card',
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+      ),
+      home: const CardListScreen(),
     );
   }
 }
 
-class PaintingMaterialList extends StatelessWidget {
-  final List<Map<String, String>> paintingMaterials = [
+class CardListScreen extends StatelessWidget {
+  const CardListScreen({super.key});
+
+  final List<Map<String, String>> items = const [
     {
-      'image': 'assets/images/painting_material_0.jpg',
-      'title': 'Acrylic Paint Set 1',
-      'subtitle': 'Premium Quality for Smooth Finishes',
-      'description':
-          'This acrylic paint set provides vibrant colors, perfect for canvas art. Great for beginners and professionals alike. Each tube contains 75ml of paint, ensuring long-lasting usage.',
+      'image':
+          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSca37bB9I9ja8qwz6MXq84Gb4VR1zoxkwGLg&s',
+      'title': 'Picture 1',
+      'subtitle': 'Subtitle 1',
+      'description': 'This is the description for picture 1.',
     },
     {
-      'image': 'assets/images/painting_material_1.jpg',
-      'title': 'Oil Paint Set 2',
-      'subtitle': 'Ideal for Canvas Painting',
-      'description':
-          'This set includes 12 vibrant oil paints, perfect for canvas painting. The paints have rich pigment quality and are easy to blend.',
+      'image':
+          'https://png.pngtree.com/thumb_back/fh260/background/20240801/pngtree-new-cb-background-images-photos-pics-wallpaper-pictures-image_16123145.jpg',
+      'title': 'Picture 2',
+      'subtitle': 'Subtitle 2',
+      'description': 'This is the description for picture 2.',
     },
     {
-      'image': 'assets/images/painting_material_2.jpg',
-      'title': 'Watercolor Paint Set 3',
-      'subtitle': 'Best for Fluid Artworks',
-      'description':
-          'This watercolor paint set includes 24 colors with smooth mixing capabilities, perfect for fluid and detailed watercolor artworks.',
-    },
-    {
-      'image': 'assets/images/painting_material_3.jpg',
-      'title': 'Brush Set 4',
-      'subtitle': 'Fine Brushes for Every Detail',
-      'description':
-          'A set of premium brushes for oil, acrylic, and watercolor painting. Includes various sizes for precision detailing.',
+      'image':
+          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShfrLRLJDTroCqhzzPtqh-4kjWA5L1JmBKbg&s',
+      'title': 'Picture 3',
+      'subtitle': 'Subtitle 3',
+      'description': 'This is the description for picture 3.',
     },
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Painting Materials'),
-      ),
+      appBar: AppBar(title: const Text('Custom Card List')),
       body: ListView.builder(
-        itemCount: paintingMaterials.length,
+        padding: const EdgeInsets.all(10),
+        itemCount: items.length,
         itemBuilder: (context, index) {
+          final item = items[index];
           return CustomCard(
-            imageUrl: paintingMaterials[index]['image']!,
-            title: paintingMaterials[index]['title']!,
-            subtitle: paintingMaterials[index]['subtitle']!,
-            description: paintingMaterials[index]['description']!,
+            image: item['image']!,
+            title: item['title']!,
+            subtitle: item['subtitle']!,
+            description: item['description']!,
           );
         },
       ),
@@ -67,58 +69,90 @@ class PaintingMaterialList extends StatelessWidget {
   }
 }
 
-class CustomCard extends StatelessWidget {
-  final String imageUrl;
+class CustomCard extends StatefulWidget {
+  final String image;
   final String title;
   final String subtitle;
   final String description;
 
-  CustomCard({
-    required this.imageUrl,
+  const CustomCard({
+    super.key,
+    required this.image,
     required this.title,
     required this.subtitle,
     required this.description,
   });
 
   @override
+  State<CustomCard> createState() => _CustomCardState();
+}
+
+class _CustomCardState extends State<CustomCard> {
+  bool _isHovered = false;
+
+  @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.all(8.0),
-      elevation: 5.0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: InkWell(
-        onTap: () {
-          print('Card tapped');
-        },
-        splashColor: Colors.blue.withAlpha(30),
-        highlightColor: Colors.blue.withAlpha(60),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _isHovered = !_isHovered;
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        margin: const EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: _isHovered ? Colors.blue[50] : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.3),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Row(
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
-              child: Image.asset(imageUrl,
-                  width: double.infinity, height: 180, fit: BoxFit.cover),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                title,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                widget.image,
+                width: 80,
+                height: 80,
+                fit: BoxFit.cover,
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Text(
-                subtitle,
-                style: TextStyle(fontSize: 14, color: Colors.grey),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                description,
-                style: TextStyle(fontSize: 14),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    widget.subtitle,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    widget.description,
+                    style: const TextStyle(fontSize: 14),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ),
             ),
           ],
